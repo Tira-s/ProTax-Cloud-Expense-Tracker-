@@ -1,4 +1,11 @@
+"use client";
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 import { useTranslation } from '@/components/LanguageProvider';
+import { Receipt, Mail, Lock, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const { t } = useTranslation();
@@ -13,10 +20,10 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      setError(error.message);
+    if (loginError) {
+      setError(loginError.message);
       setLoading(false);
     } else {
       router.push('/dashboard');
@@ -81,12 +88,12 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500">
+        <div className="text-center text-sm text-gray-500">
           {t('noAccount')}{' '}
           <Link href="/signup" className="font-semibold text-indigo-600 hover:text-indigo-500 transition">
             {t('signUpLink')}
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

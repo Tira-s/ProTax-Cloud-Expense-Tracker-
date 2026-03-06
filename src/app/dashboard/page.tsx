@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/components/AuthProvider";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Transaction, Deduction, TaxResult } from "@/types";
 import { calculateTax } from "@/lib/taxUtils";
 import { supabase } from "@/lib/supabase";
@@ -15,7 +15,18 @@ import ExportButton from "@/components/ExportButton";
 import { useTranslation } from "@/components/LanguageProvider";
 import { 
   Languages,
-  ArrowRight
+  ArrowRight,
+  Loader2,
+  Receipt,
+  Cloud,
+  LogOut,
+  ArrowUpDown,
+  Clock,
+  Calendar,
+  Coins,
+  Tag,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import { sanitizeText, isValidAmount } from "@/lib/securityUtils";
 

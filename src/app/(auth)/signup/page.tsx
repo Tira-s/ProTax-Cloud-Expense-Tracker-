@@ -1,4 +1,11 @@
+"use client";
+
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 import { useTranslation } from '@/components/LanguageProvider';
+import { UserPlus, Mail, Lock, Loader2 } from 'lucide-react';
 
 export default function SignupPage() {
   const { t } = useTranslation();
@@ -13,10 +20,10 @@ export default function SignupPage() {
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error: signupError } = await supabase.auth.signUp({ email, password });
 
-    if (error) {
-      setError(error.message);
+    if (signupError) {
+      setError(signupError.message);
       setLoading(false);
     } else {
       router.push('/login?message=Check your email to confirm registration');
@@ -77,16 +84,16 @@ export default function SignupPage() {
             disabled={loading}
             className="w-full py-3 px-4 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-semibold shadow-lg shadow-violet-600/25 transition flex items-center justify-center gap-2 group disabled:opacity-70"
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('signUpLink')}
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('signUpBtn')}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500">
+        <div className="text-center text-sm text-gray-500">
           {t('alreadyHaveAccount')}{' '}
           <Link href="/login" className="font-semibold text-violet-600 hover:text-violet-500 transition">
             {t('loginLink')}
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
