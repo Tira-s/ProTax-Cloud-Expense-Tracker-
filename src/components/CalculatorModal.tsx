@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Delete, Command, Equal } from "lucide-react";
+import { useTranslation } from "./LanguageProvider";
 
 interface CalculatorModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface CalculatorModalProps {
 }
 
 export default function CalculatorModal({ isOpen, onClose, onConfirm, initialValue = "" }: CalculatorModalProps) {
+  const { t } = useTranslation();
   const [display, setDisplay] = useState(initialValue || "0");
   const [equation, setEquation] = useState("");
 
@@ -63,7 +65,7 @@ export default function CalculatorModal({ isOpen, onClose, onConfirm, initialVal
             <div className="p-2 bg-indigo-50 rounded-xl">
               <Command className="w-4 h-4 text-indigo-600" />
             </div>
-            <span className="text-xs font-bold text-slate-800 uppercase tracking-widest">Logic Calc</span>
+            <span className="text-xs font-bold text-slate-800 uppercase tracking-widest">{t('logicCalc')}</span>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition">
             <X className="w-5 h-5 text-slate-400" />
@@ -103,7 +105,7 @@ export default function CalculatorModal({ isOpen, onClose, onConfirm, initialVal
           onClick={() => onConfirm(Number(display))}
           className="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-3xl transition-all shadow-xl shadow-slate-900/20 active:scale-95 mt-2"
         >
-          Use Value
+          {t('useValue')}
         </button>
       </div>
     </div>

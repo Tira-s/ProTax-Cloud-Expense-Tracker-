@@ -5,6 +5,7 @@ import { Plus, X, ShieldCheck, HeartPulse, Calculator } from "lucide-react";
 import { Deduction } from "@/types";
 import { generateId } from "@/lib/idUtils";
 import CalculatorModal from "./CalculatorModal";
+import { useTranslation } from "./LanguageProvider";
 
 interface DeductionManagerProps {
   deductions: Deduction[];
@@ -12,6 +13,7 @@ interface DeductionManagerProps {
 }
 
 export default function DeductionManager({ deductions, onChange }: DeductionManagerProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [isCalcOpen, setIsCalcOpen] = useState(false);
@@ -44,7 +46,7 @@ export default function DeductionManager({ deductions, onChange }: DeductionMana
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3 mb-2">
           <ShieldCheck className="w-5 h-5 text-violet-600" />
-          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Manual Deductions</h2>
+          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t('manualDeductions')}</h2>
         </div>
 
         <div className="space-y-3">
@@ -72,7 +74,7 @@ export default function DeductionManager({ deductions, onChange }: DeductionMana
           
           {deductions.length > 0 && (
             <div className="flex justify-between px-4 py-2 border-t border-slate-100 mt-2">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Custom</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('totalCustom')}</span>
               <span className="text-sm font-black text-slate-900 tabular-nums">฿{total.toLocaleString()}</span>
             </div>
           )}
@@ -83,7 +85,7 @@ export default function DeductionManager({ deductions, onChange }: DeductionMana
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Deduction Name"
+            placeholder={t('deductionName')}
             className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-sm focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition outline-none font-medium"
           />
           <div className="relative group">

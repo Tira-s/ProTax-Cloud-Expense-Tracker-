@@ -1,8 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --font-sans: var(--font-inter), var(--font-noto-thai), "Inter",
-    "Noto Sans Thai", system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-mono), var(--font-ibm-thai), system-ui, -apple-system, sans-serif;
 }
 
 body {

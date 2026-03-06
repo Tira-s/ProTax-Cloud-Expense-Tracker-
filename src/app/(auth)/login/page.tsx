@@ -1,12 +1,7 @@
-"use client";
-
-import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Receipt, Mail, Lock, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/components/LanguageProvider';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -35,8 +30,8 @@ export default function LoginPage() {
           <div className="inline-flex p-3 bg-indigo-500 rounded-2xl shadow-lg shadow-indigo-500/20 mb-4">
             <Receipt className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">ProTax Cloud</h2>
-          <p className="mt-2 text-sm text-gray-500">Sign in to manage your taxes securely</p>
+          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">{t('appName')}</h2>
+          <p className="mt-2 text-sm text-gray-500">{t('signInSubtitle')}</p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
@@ -48,7 +43,7 @@ export default function LoginPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('emailLabel')}</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                 <input
@@ -62,7 +57,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('passwordLabel')}</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                 <input
@@ -82,14 +77,14 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 group disabled:opacity-70"
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign in"}
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('signInBtn')}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-500">
-          Don&apos;t have an account?{' '}
+          {t('noAccount')}{' '}
           <Link href="/signup" className="font-semibold text-indigo-600 hover:text-indigo-500 transition">
-            Sign up
+            {t('signUpLink')}
           </Link>
         </p>
       </div>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Pencil, Trash2, Check, X, Table2, Filter } from "lucide-react";
 import { Transaction } from "@/types";
 import { formatCurrency } from "@/lib/taxUtils";
+import { useTranslation } from "./LanguageProvider";
 
 interface ExpenseTableProps {
   transactions: Transaction[];
@@ -12,6 +13,7 @@ interface ExpenseTableProps {
 }
 
 export default function ExpenseTable({ transactions, onUpdate, onDelete }: ExpenseTableProps) {
+  const { t } = useTranslation();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Transaction | null>(null);
 
@@ -38,8 +40,8 @@ export default function ExpenseTable({ transactions, onUpdate, onDelete }: Expen
         <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
           <Table2 className="w-8 h-8 text-slate-300" />
         </div>
-        <p className="text-slate-800 font-bold">No cloud records found</p>
-        <p className="text-slate-400 text-xs mt-1">Start by adding your first transaction.</p>
+        <p className="text-slate-800 font-bold">{t('noRecords')}</p>
+        <p className="text-slate-400 text-xs mt-1">{t('startAdding')}</p>
       </div>
     );
   }
@@ -49,11 +51,11 @@ export default function ExpenseTable({ transactions, onUpdate, onDelete }: Expen
       <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
         <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2 uppercase tracking-tight">
           <Table2 className="w-4 h-4 text-indigo-600" />
-          Cloud Ledger
+          {t('cloudLedger')}
         </h2>
         <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
           <Filter className="w-3 h-3" />
-          {transactions.length} Entries
+          {transactions.length} {t('entries')}
         </div>
       </div>
 
@@ -61,10 +63,10 @@ export default function ExpenseTable({ transactions, onUpdate, onDelete }: Expen
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-[10px] text-slate-400 font-bold uppercase tracking-widest border-b border-slate-50">
-              <th className="px-6 py-4">Status / Date</th>
-              <th className="px-6 py-4">Description</th>
-              <th className="px-6 py-4 text-right">Amount</th>
-              <th className="px-6 py-4 text-center">Action</th>
+              <th className="px-6 py-4">{t('statusDate')}</th>
+              <th className="px-6 py-4">{t('description')}</th>
+              <th className="px-6 py-4 text-right">{t('amount')}</th>
+              <th className="px-6 py-4 text-center">{t('action')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
@@ -117,7 +119,7 @@ export default function ExpenseTable({ transactions, onUpdate, onDelete }: Expen
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
                       <span className={`text-[10px] font-bold uppercase ${tx.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {tx.type}
+                        {t(tx.type)}
                       </span>
                       <span className="text-slate-400 text-xs font-medium tabular-nums">
                         {new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -127,7 +129,7 @@ export default function ExpenseTable({ transactions, onUpdate, onDelete }: Expen
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
                       <span className="font-bold text-slate-800">{tx.name}</span>
-                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">{tx.category || 'Other'}</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">{t(tx.category || 'other')}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">

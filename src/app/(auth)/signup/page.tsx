@@ -1,12 +1,7 @@
-"use client";
-
-import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Receipt, Mail, Lock, Loader2, UserPlus } from 'lucide-react';
+import { useTranslation } from '@/components/LanguageProvider';
 
 export default function SignupPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -35,8 +30,8 @@ export default function SignupPage() {
           <div className="inline-flex p-3 bg-violet-500 rounded-2xl shadow-lg shadow-violet-500/20 mb-4">
             <UserPlus className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Create Account</h2>
-          <p className="mt-2 text-sm text-gray-500">Join ProTax Cloud to track your taxes</p>
+          <h2 className="text-3xl font-bold text-gray-900 tracking-tight">{t('signUpTitle')}</h2>
+          <p className="mt-2 text-sm text-gray-500">{t('signUpSubtitle')}</p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSignup}>
@@ -48,7 +43,7 @@ export default function SignupPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('emailLabel')}</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                 <input
@@ -62,7 +57,7 @@ export default function SignupPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('passwordLabel')}</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
                 <input
@@ -82,14 +77,14 @@ export default function SignupPage() {
             disabled={loading}
             className="w-full py-3 px-4 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-semibold shadow-lg shadow-violet-600/25 transition flex items-center justify-center gap-2 group disabled:opacity-70"
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign up"}
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('signUpLink')}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-500">
-          Already have an account?{' '}
+          {t('alreadyHaveAccount')}{' '}
           <Link href="/login" className="font-semibold text-violet-600 hover:text-violet-500 transition">
-            Sign in
+            {t('loginLink')}
           </Link>
         </p>
       </div>

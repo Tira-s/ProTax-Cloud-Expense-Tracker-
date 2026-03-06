@@ -1,93 +1,123 @@
 "use client";
 
-import { ReceiptText, CheckCircle2, AlertCircle } from "lucide-react";
+import { FileText, Calculator, ChevronRight, Info, CheckCircle2 } from "lucide-react";
 import { TaxResult } from "@/types";
-import { formatCurrency, formatBracketRange } from "@/lib/taxUtils";
+import { formatCurrency } from "@/lib/taxUtils";
+import { useTranslation } from "./LanguageProvider";
 
 interface TaxCalculatorProps {
   result: TaxResult;
 }
 
 export default function TaxCalculator({ result }: TaxCalculatorProps) {
-  return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-8">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-amber-500/10 rounded-xl">
-            <ReceiptText className="w-5 h-5 text-amber-600" />
-          </div>
-          <h2 className="text-lg font-black text-slate-800 tracking-tight">Tax Report Analysis</h2>
-        </div>
-        <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-bold uppercase tracking-wider">
-          <CheckCircle2 className="w-3 h-3" /> Updated Live
-        </div>
-      </div>
+  const { t } = useTranslation();
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left: Calculation Summary */}
-        <div className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-widest border-l-2 border-slate-200 pl-3">Deduction Breakdown</h3>
-          <div className="space-y-3 px-3">
-            <Row label="Gross Income" value={result.grossIncome} />
-            <Row label="Expenses (50% cap 100k)" value={-result.expenseDeduction} negative />
-            <Row label="Personal Deduction" value={-result.personalDeduction} negative />
-            {result.customDeductions > 0 && <Row label="Other Deductions" value={-result.customDeductions} negative />}
-            <div className="pt-3 mt-3 border-t border-slate-100 flex justify-between items-center">
-              <span className="text-sm font-black text-slate-900">Net Taxable Income</span>
-              <span className="text-lg font-black text-slate-900 tabular-nums">฿{formatCurrency(result.netIncome)}</span>
+  return (
+    <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="p-8 space-y-8">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-100 pb-8">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-indigo-50 rounded-xl">
+                <FileText className="w-4 h-4 text-indigo-600" />
+              </div>
+              <span className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">{t('logicReport')}</span>
+            </div>
+            <h2 className="text-3xl font-black text-slate-900 tracking-tighter leading-none">
+              {t('taxReport')}
+            </h2>
+          </div>
+          
+          <div className="flex flex-col items-start md:items-end">
+            <div className="flex items-center gap-1.5 mb-1">
+              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('taxableIncome')}</span>
+            </div>
+            <div className="text-4xl font-black text-slate-900 tracking-tighter tabular-nums">
+              ฿{result.netIncome.toLocaleString()}
             </div>
           </div>
         </div>
 
-        {/* Right: Progressive Rates */}
-        <div className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-widest border-l-2 border-slate-200 pl-3">Progressive Tax Engine</h3>
-          <div className="overflow-hidden rounded-xl border border-slate-100 shadow-sm">
-            <table className="w-full text-xs">
-              <thead className="bg-slate-50">
-                <tr className="text-left text-[9px] text-slate-400 font-black uppercase tracking-widest">
-                  <th className="px-4 py-3">Bracket (฿)</th>
-                  <th className="px-4 py-3 text-center">Rate</th>
-                  <th className="px-4 py-3 text-right">Tax (฿)</th>
+        {/* Deductions & Allowances Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
+          <div className="p-5 bg-slate-50 rounded-3xl border border-slate-100 space-y-1">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('totalIncome')}</span>
+            <p className="text-xl font-black text-slate-900 tabular-nums">฿{result.grossIncome.toLocaleString()}</p>
+          </div>
+          <div className="p-5 bg-emerald-50/50 rounded-3xl border border-emerald-100 space-y-1">
+            <span className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest">{t('standardDeduction')}</span>
+            <p className="text-xl font-black text-emerald-600 tabular-nums">-฿{result.expenseDeduction.toLocaleString()}</p>
+          </div>
+          <div className="p-5 bg-emerald-50/50 rounded-3xl border border-emerald-100 space-y-1">
+            <span className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest">{t('personalAllowance')}</span>
+            <p className="text-xl font-black text-emerald-600 tabular-nums">-฿{result.personalDeduction.toLocaleString()}</p>
+          </div>
+        </div>
+
+        {/* Tax Breakdown Table */}
+        <div className="space-y-4 pt-4">
+          <div className="flex items-center gap-2">
+            <Calculator className="w-4 h-4 text-slate-400" />
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">{t('taxBreakdown')}</h3>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-slate-100">
+                  <th className="pb-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('bracket')}</th>
+                  <th className="pb-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">{t('rate')}</th>
+                  <th className="pb-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">{t('taxAmount')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {result.brackets.map((b, i) => (
-                  <tr key={i} className={`transition-colors ${b.taxAmount > 0 ? "bg-indigo-50/20 text-indigo-900 font-bold" : "text-slate-300"}`}>
-                    <td className="px-4 py-2.5 tabular-nums">{formatBracketRange(b.min, b.max)}</td>
-                    <td className="px-4 py-2.5 text-center font-black">{(b.rate * 100).toFixed(0)}%</td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">{formatCurrency(b.taxAmount)}</td>
+                {result.brackets.map((b, idx) => (
+                  <tr key={idx} className={`group transition-colors ${b.taxAmount > 0 ? 'bg-indigo-50/30' : ''}`}>
+                    <td className="py-4 px-2 rounded-l-2xl">
+                      <div className="flex items-center gap-2">
+                        <ChevronRight className="w-3 h-3 text-slate-300" />
+                        <span className={`text-sm font-bold ${b.taxAmount > 0 ? 'text-slate-900' : 'text-slate-400'}`}>
+                           ฿{b.min.toLocaleString()} - {b.max === Infinity ? t('more') || 'Up' : `฿${b.max.toLocaleString()}`}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-4 text-center">
+                      <span className={`px-2 py-1 rounded-lg text-[10px] font-black ${b.taxAmount > 0 ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-400'}`}>
+                        {(b.rate * 100).toFixed(0)}%
+                      </span>
+                    </td>
+                    <td className="py-4 text-right px-2 rounded-r-2xl">
+                      <span className={`text-sm font-black tabular-nums ${b.taxAmount > 0 ? 'text-indigo-600' : 'text-slate-300'}`}>
+                        ฿{b.taxAmount.toLocaleString()}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </div>
-      </div>
 
-      <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl shadow-slate-900/20">
-        <div className="flex items-center gap-4">
-          <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-            <AlertCircle className="w-8 h-8 text-indigo-400" />
+        {/* Grand Total Footer */}
+        <div className="bg-slate-900 rounded-[2.5rem] p-8 mt-4 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl shadow-indigo-900/20">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-indigo-500/20 rounded-2xl border border-indigo-500/30">
+              <Info className="w-6 h-6 text-indigo-300" />
+            </div>
+            <div>
+              <p className="text-indigo-300 text-[10px] font-black uppercase tracking-[0.2em]">{t('taxAmount')} (Net)</p>
+              <p className="text-white/60 text-xs font-medium">Estimated Annual Total</p>
+            </div>
           </div>
-          <div>
-            <p className="text-indigo-300 text-xs font-bold uppercase tracking-widest mb-1">Total Tax Payable</p>
-            <h4 className="text-3xl sm:text-4xl font-black text-white tracking-tighter tabular-nums">฿{formatCurrency(result.totalTax)}</h4>
+          <div className="text-center md:text-right">
+            <span className="text-5xl font-black text-white tracking-tighter tabular-nums">
+              ฿{result.totalTax.toLocaleString()}
+            </span>
           </div>
         </div>
-        <div className="text-indigo-400/50 font-black text-5xl hidden sm:block italic tracking-tighter opacity-20">PRO TAX</div>
       </div>
-    </div>
-  );
-}
-
-function Row({ label, value, negative }: { label: string; value: number; negative?: boolean }) {
-  return (
-    <div className="flex justify-between items-center gap-4">
-      <span className="text-xs font-bold text-slate-500 uppercase tracking-tight min-w-0 break-words">{label}</span>
-      <span className={`shrink-0 tabular-nums font-black text-sm ${negative ? "text-rose-500" : "text-slate-900"}`}>
-        {negative ? "-" : ""}฿{formatCurrency(Math.abs(value))}
-      </span>
     </div>
   );
 }

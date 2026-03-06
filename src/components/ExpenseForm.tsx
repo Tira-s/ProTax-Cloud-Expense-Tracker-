@@ -5,22 +5,24 @@ import { PlusCircle, Tag, Banknote, Calendar, Calculator } from "lucide-react";
 import { Transaction } from "@/types";
 import { generateId } from "@/lib/idUtils";
 import CalculatorModal from "./CalculatorModal";
+import { useTranslation } from "./LanguageProvider";
 
 interface ExpenseFormProps {
   onAdd: (tx: Transaction) => void;
 }
 
-const categories = [
-  "Salary", "Freelance", "Investment", "Food", "Travel", "Housing", "Health", "Other"
-];
-
 export default function ExpenseForm({ onAdd }: ExpenseFormProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<"income" | "expense">("expense");
-  const [category, setCategory] = useState("Other");
+  const [category, setCategory] = useState("other");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [isCalcOpen, setIsCalcOpen] = useState(false);
+
+  const categories = [
+    "salary", "freelance", "investment", "food", "travel", "housing", "health", "other"
+  ];
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,20 +54,20 @@ export default function ExpenseForm({ onAdd }: ExpenseFormProps) {
       >
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3 mb-2">
           <PlusCircle className="w-5 h-5 text-indigo-600" />
-          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-tight">Add Transaction</h2>
+          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-tight">{t('addTransaction')}</h2>
         </div>
 
         <div className="space-y-4">
           {/* Name */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
-              <Tag className="w-3 h-3" /> Title
+              <Tag className="w-3 h-3" /> {t('title')}
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Monthly Salary"
+              placeholder={t('placeholderTitle')}
               className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-sm
                          focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500
                          transition placeholder:text-slate-400 font-medium"
@@ -77,7 +79,7 @@ export default function ExpenseForm({ onAdd }: ExpenseFormProps) {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
-                  <Banknote className="w-3 h-3" /> Amount
+                  <Banknote className="w-3 h-3" /> {t('amount')}
                 </label>
                 <button 
                   type="button"
@@ -99,7 +101,7 @@ export default function ExpenseForm({ onAdd }: ExpenseFormProps) {
             </div>
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
-                <Tag className="w-3 h-3" /> Category
+                <Tag className="w-3 h-3" /> {t('category')}
               </label>
               <select
                 value={category}
@@ -108,7 +110,7 @@ export default function ExpenseForm({ onAdd }: ExpenseFormProps) {
                            focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500
                            transition font-medium"
               >
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                {categories.map(c => <option key={c} value={c}>{t(c)}</option>)}
               </select>
             </div>
           </div>
@@ -121,7 +123,7 @@ export default function ExpenseForm({ onAdd }: ExpenseFormProps) {
               className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all
                 ${type === "income" ? "bg-white text-emerald-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
             >
-              Income
+              {t('income')}
             </button>
             <button
               type="button"
@@ -129,14 +131,14 @@ export default function ExpenseForm({ onAdd }: ExpenseFormProps) {
               className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all
                 ${type === "expense" ? "bg-white text-rose-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
             >
-              Expense
+              {t('expense')}
             </button>
           </div>
 
           {/* Date */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
-              <Calendar className="w-3 h-3" /> Date
+              <Calendar className="w-3 h-3" /> {t('date')}
             </label>
             <input
               type="date"
@@ -155,7 +157,7 @@ export default function ExpenseForm({ onAdd }: ExpenseFormProps) {
                      py-3 rounded-xl transition shadow-xl shadow-slate-900/10
                      active:scale-[0.98] text-sm"
         >
-          Sync to Cloud
+          {t('syncToCloud')}
         </button>
       </form>
 

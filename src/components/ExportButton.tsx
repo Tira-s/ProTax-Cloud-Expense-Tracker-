@@ -1,8 +1,9 @@
 "use client";
 
-import { Download, FileDown } from "lucide-react";
-import { Transaction, Deduction, TaxResult } from "@/types";
+import { FileDown } from "lucide-react";
 import * as XLSX from "xlsx";
+import { Transaction, Deduction, TaxResult } from "@/types";
+import { useTranslation } from "./LanguageProvider";
 
 interface ExportButtonProps {
   transactions: Transaction[];
@@ -11,56 +12,40 @@ interface ExportButtonProps {
 }
 
 export default function ExportButton({ transactions, deductions, taxResult }: ExportButtonProps) {
-  function handleExport() {
+  const { t } = useTranslation();
+
+  const handleExport = () => {
     const wb = XLSX.utils.book_new();
 
-    // Sheet 1: Cloud Ledger (Transactions)
-    const txData = transactions.map((tx) => ({
-      Date: tx.date,
-      Title: tx.name,
-      Category: tx.category || "Other",
-      Type: tx.type === "income" ? "INCOME" : "EXPENSE",
-      "Amount (฿)": tx.amount,
+    // 1. Transactions Sheet
+    const txData = transactions.map(t_item => ({
+      [t('exportHeaderDate')]: t_item.date,
+      [t('exportHeaderName')]: t_item.name,
+      [t('category')]: t(t_item.category || 'other'),
+      [t('type')]: t(t_item.type),
+      [t('exportHeaderAmount')]: t_item.amount,
     }));
-    const ws1 = XLSX.utils.json_to_sheet(txData);
-    ws1["!cols"] = [{ wch: 14 }, { wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 18 }];
-    XLSX.utils.book_append_sheet(wb, ws1, "Transactions");
+    const txSheet = XLSX.utils.json_to_sheet(txData);
+    txSheet["!cols"] = [{ wch: 15 }, { wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 15 }];
+    XLSX.utils.book_append_sheet(wb, txSheet, t('cloudLedger'));
 
-    // Sheet 2: Deductions
-    const dedData = [
-      { Item: "Personal Deduction (Base)", Amount: taxResult.personalDeduction },
-      { Item: "Expense Deduction (50% cap 100k)", Amount: taxResult.expenseDeduction },
-      ...deductions.map((d) => ({
-        Item: d.name,
-        Amount: d.amount,
-      })),
-    ];
-    const ws2 = XLSX.utils.json_to_sheet(dedData);
-    ws2["!cols"] = [{ wch: 35 }, { wch: 18 }];
-    XLSX.utils.book_append_sheet(wb, ws2, "Deductions");
-
-    // Sheet 3: ProTax Summary
+    // 2. Tax Summary Sheet
     const summaryData = [
-      { Metric: "Gross Income", Value: taxResult.grossIncome },
-      { Metric: "Total Deductions", Value: taxResult.totalDeductions },
-      { Metric: "Net Taxable Income", Value: taxResult.netIncome },
-      { Metric: "", Value: "" },
-      ...taxResult.brackets
-        .filter((b) => b.taxAmount > 0)
-        .map((b) => ({
-          Metric: `Tax Rate ${(b.rate * 100).toFixed(0)}%`,
-          Value: b.taxAmount,
-        })),
-      { Metric: "", Value: "" },
-      { Metric: "TOTAL TAX PAYABLE", Value: taxResult.totalTax },
+      { [t('description')]: t('totalIncome'), [t('amount')]: taxResult.grossIncome },
+      { [t('description')]: t('standardDeduction'), [t('amount')]: taxResult.expenseDeduction },
+      { [t('description')]: t('personalAllowance'), [t('amount')]: taxResult.personalDeduction },
+      { [t('description')]: t('totalCustom'), [t('amount')]: taxResult.customDeductions },
+      { [t('description')]: "", [t('amount')]: "" },
+      { [t('description')]: t('taxableIncome'), [t('amount')]: taxResult.netIncome },
+      { [t('description')]: t('taxAmount') + " (Net)", [t('amount')]: taxResult.totalTax },
     ];
-    const ws3 = XLSX.utils.json_to_sheet(summaryData);
-    ws3["!cols"] = [{ wch: 35 }, { wch: 18 }];
-    XLSX.utils.book_append_sheet(wb, ws3, "Tax Summary");
+    const summarySheet = XLSX.utils.json_to_sheet(summaryData);
+    summarySheet["!cols"] = [{ wch: 35 }, { wch: 18 }];
+    XLSX.utils.book_append_sheet(wb, summarySheet, t('summaryTitle'));
 
-    // Download with professional naming
+    // Download
     const dateStr = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(wb, `ProTax_Cloud_Report_${dateStr}.xlsx`);
+    XLSX.writeFile(wb, `ProTax_Report_${dateStr}.xlsx`);
   }
 
   return (
@@ -72,7 +57,7 @@ export default function ExportButton({ transactions, deductions, taxResult }: Ex
                  disabled:opacity-30 disabled:cursor-not-allowed group active:scale-95"
     >
       <FileDown className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition" />
-      <span className="hidden sm:inline">Export Ledger</span>
+      <span className="hidden sm:inline">{t('export')}</span>
     </button>
   );
 }
