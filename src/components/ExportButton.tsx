@@ -1,8 +1,7 @@
 "use client";
 
-import { Download } from "lucide-react";
-import { Transaction, Deduction } from "@/types";
-import { TaxResult } from "@/types";
+import { Download, FileDown } from "lucide-react";
+import { Transaction, Deduction, TaxResult } from "@/types";
 import * as XLSX from "xlsx";
 
 interface ExportButtonProps {
@@ -11,79 +10,69 @@ interface ExportButtonProps {
   taxResult: TaxResult;
 }
 
-export default function ExportButton({
-  transactions,
-  deductions,
-  taxResult,
-}: ExportButtonProps) {
+export default function ExportButton({ transactions, deductions, taxResult }: ExportButtonProps) {
   function handleExport() {
     const wb = XLSX.utils.book_new();
 
-    // Sheet 1: Transactions
+    // Sheet 1: Cloud Ledger (Transactions)
     const txData = transactions.map((tx) => ({
-      วันที่: tx.date,
-      รายการ: tx.name,
-      ประเภท: tx.type === "income" ? "รายรับ" : "รายจ่าย",
-      "จำนวนเงิน (฿)": tx.amount,
+      Date: tx.date,
+      Title: tx.name,
+      Category: tx.category || "Other",
+      Type: tx.type === "income" ? "INCOME" : "EXPENSE",
+      "Amount (฿)": tx.amount,
     }));
     const ws1 = XLSX.utils.json_to_sheet(txData);
-    ws1["!cols"] = [{ wch: 14 }, { wch: 30 }, { wch: 10 }, { wch: 18 }];
-    XLSX.utils.book_append_sheet(wb, ws1, "รายการทั้งหมด");
+    ws1["!cols"] = [{ wch: 14 }, { wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 18 }];
+    XLSX.utils.book_append_sheet(wb, ws1, "Transactions");
 
     // Sheet 2: Deductions
-    if (deductions.length > 0) {
-      const dedData = deductions.map((d) => ({
-        "ชื่อลดหย่อน": d.name,
-        "จำนวนเงิน (฿)": d.amount,
-      }));
-      const ws2 = XLSX.utils.json_to_sheet(dedData);
-      ws2["!cols"] = [{ wch: 30 }, { wch: 18 }];
-      XLSX.utils.book_append_sheet(wb, ws2, "ค่าลดหย่อน");
-    }
+    const dedData = [
+      { Item: "Personal Deduction (Base)", Amount: taxResult.personalDeduction },
+      { Item: "Expense Deduction (50% cap 100k)", Amount: taxResult.expenseDeduction },
+      ...deductions.map((d) => ({
+        Item: d.name,
+        Amount: d.amount,
+      })),
+    ];
+    const ws2 = XLSX.utils.json_to_sheet(dedData);
+    ws2["!cols"] = [{ wch: 35 }, { wch: 18 }];
+    XLSX.utils.book_append_sheet(wb, ws2, "Deductions");
 
-    // Sheet 3: Tax Summary
+    // Sheet 3: ProTax Summary
     const summaryData = [
-      { รายการ: "เงินได้พึงประเมิน", "จำนวนเงิน (฿)": taxResult.grossIncome },
-      {
-        รายการ: "หักค่าใช้จ่าย (50% ไม่เกิน 100,000)",
-        "จำนวนเงิน (฿)": taxResult.expenseDeduction,
-      },
-      {
-        รายการ: "หักลดหย่อนส่วนตัว",
-        "จำนวนเงิน (฿)": taxResult.personalDeduction,
-      },
-      {
-        รายการ: "หักลดหย่อนอื่นๆ",
-        "จำนวนเงิน (฿)": taxResult.customDeductions,
-      },
-      { รายการ: "เงินได้สุทธิ", "จำนวนเงิน (฿)": taxResult.netIncome },
-      { รายการ: "", "จำนวนเงิน (฿)": "" },
+      { Metric: "Gross Income", Value: taxResult.grossIncome },
+      { Metric: "Total Deductions", Value: taxResult.totalDeductions },
+      { Metric: "Net Taxable Income", Value: taxResult.netIncome },
+      { Metric: "", Value: "" },
       ...taxResult.brackets
         .filter((b) => b.taxAmount > 0)
         .map((b) => ({
-          รายการ: `ภาษีอัตรา ${(b.rate * 100).toFixed(0)}%`,
-          "จำนวนเงิน (฿)": b.taxAmount,
+          Metric: `Tax Rate ${(b.rate * 100).toFixed(0)}%`,
+          Value: b.taxAmount,
         })),
-      { รายการ: "ภาษีรวมที่ต้องชำระ", "จำนวนเงิน (฿)": taxResult.totalTax },
+      { Metric: "", Value: "" },
+      { Metric: "TOTAL TAX PAYABLE", Value: taxResult.totalTax },
     ];
     const ws3 = XLSX.utils.json_to_sheet(summaryData);
     ws3["!cols"] = [{ wch: 35 }, { wch: 18 }];
-    XLSX.utils.book_append_sheet(wb, ws3, "สรุปภาษี");
+    XLSX.utils.book_append_sheet(wb, ws3, "Tax Summary");
 
-    // Download
-    XLSX.writeFile(wb, `SmartTax_Report_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    // Download with professional naming
+    const dateStr = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `ProTax_Cloud_Report_${dateStr}.xlsx`);
   }
 
   return (
     <button
       onClick={handleExport}
       disabled={transactions.length === 0}
-      className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600
-                 text-white font-semibold rounded-xl transition shadow-sm shadow-emerald-500/20
-                 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
+      className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-black 
+                 text-white text-xs font-bold rounded-xl transition shadow-xl shadow-slate-900/10
+                 disabled:opacity-30 disabled:cursor-not-allowed group active:scale-95"
     >
-      <Download className="w-5 h-5" />
-      ส่งออก Excel
+      <FileDown className="w-4 h-4 text-indigo-400 group-hover:scale-110 transition" />
+      <span className="hidden sm:inline">Export Ledger</span>
     </button>
   );
 }

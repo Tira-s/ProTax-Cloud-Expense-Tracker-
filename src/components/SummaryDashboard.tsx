@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  TrendingUp,
-  TrendingDown,
-  Wallet,
-  Calculator,
-} from "lucide-react";
+import { TrendingUp, TrendingDown, Wallet, Calculator } from "lucide-react";
 import { formatCurrency } from "@/lib/taxUtils";
 
 interface SummaryDashboardProps {
@@ -15,78 +10,29 @@ interface SummaryDashboardProps {
   totalTax: number;
 }
 
-const cards = [
-  {
-    key: "income",
-    label: "รายรับรวม",
-    icon: TrendingUp,
-    color: "text-emerald-600",
-    bg: "bg-emerald-50",
-    ring: "ring-emerald-100",
-  },
-  {
-    key: "expense",
-    label: "รายจ่ายรวม",
-    icon: TrendingDown,
-    color: "text-rose-600",
-    bg: "bg-rose-50",
-    ring: "ring-rose-100",
-  },
-  {
-    key: "balance",
-    label: "คงเหลือ",
-    icon: Wallet,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-    ring: "ring-blue-100",
-  },
-  {
-    key: "tax",
-    label: "ภาษีที่ต้องชำระ",
-    icon: Calculator,
-    color: "text-amber-600",
-    bg: "bg-amber-50",
-    ring: "ring-amber-100",
-  },
-] as const;
-
-export default function SummaryDashboard({
-  totalIncome,
-  totalExpense,
-  balance,
-  totalTax,
-}: SummaryDashboardProps) {
-  const values: Record<string, number> = {
-    income: totalIncome,
-    expense: totalExpense,
-    balance,
-    tax: totalTax,
-  };
+export default function SummaryDashboard({ totalIncome, totalExpense, balance, totalTax }: SummaryDashboardProps) {
+  const cards = [
+    { label: "Gross Income", val: totalIncome, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-500/10", border: "border-emerald-100" },
+    { label: "Expenses", val: totalExpense, icon: TrendingDown, color: "text-rose-600", bg: "bg-rose-500/10", border: "border-rose-100" },
+    { label: "Net Balance", val: balance, icon: Wallet, color: "text-slate-900", bg: "bg-slate-500/10", border: "border-slate-100" },
+    { label: "Tax Payable", val: totalTax, icon: Calculator, color: "text-indigo-600", bg: "bg-indigo-500/10", border: "border-indigo-100" },
+  ];
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((c) => {
-        const Icon = c.icon;
-        return (
-          <div
-            key={c.key}
-            className={`rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col gap-3
-                       bg-white ring-1 ${c.ring} hover:shadow-md transition`}
-          >
-            <div className="flex items-center gap-2">
-              <div className={`p-2 rounded-lg ${c.bg}`}>
-                <Icon className={`w-5 h-5 ${c.color}`} />
-              </div>
-              <span className="text-sm font-medium text-gray-500">
-                {c.label}
-              </span>
-            </div>
-            <p className={`text-2xl font-bold tabular-nums tracking-tight ${c.color}`}>
-              ฿{formatCurrency(values[c.key])}
-            </p>
+      {cards.map((c, i) => (
+        <div key={i} className={`bg-white rounded-2xl border ${c.border} p-5 shadow-sm hover:shadow-md transition group overflow-hidden relative`}>
+          <div className="flex flex-col gap-1 relative z-10">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{c.label}</span>
+            <span className={`text-xl sm:text-2xl font-black tabular-nums tracking-tighter ${c.color}`}>
+              ฿{formatCurrency(c.val)}
+            </span>
           </div>
-        );
-      })}
+          <div className={`absolute -right-2 -bottom-2 p-4 rounded-full ${c.bg} transition-transform group-hover:scale-110 opacity-50`}>
+            <c.icon className={`w-8 h-8 ${c.color}`} />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

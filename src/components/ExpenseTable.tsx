@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2, Check, X, Table2 } from "lucide-react";
+import { Pencil, Trash2, Check, X, Table2, Filter } from "lucide-react";
 import { Transaction } from "@/types";
 import { formatCurrency } from "@/lib/taxUtils";
 
@@ -11,11 +11,7 @@ interface ExpenseTableProps {
   onDelete: (id: string) => void;
 }
 
-export default function ExpenseTable({
-  transactions,
-  onUpdate,
-  onDelete,
-}: ExpenseTableProps) {
+export default function ExpenseTable({ transactions, onUpdate, onDelete }: ExpenseTableProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Transaction | null>(null);
 
@@ -36,120 +32,78 @@ export default function ExpenseTable({
     }
   }
 
-  const sorted = [...transactions].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-
   if (transactions.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
-        <Table2 className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-        <p className="text-gray-400 text-sm">ยังไม่มีรายการ</p>
-        <p className="text-gray-300 text-xs mt-1">
-          เพิ่มรายการแรกจากฟอร์มด้านบน
-        </p>
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
+        <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Table2 className="w-8 h-8 text-slate-300" />
+        </div>
+        <p className="text-slate-800 font-bold">No cloud records found</p>
+        <p className="text-slate-400 text-xs mt-1">Start by adding your first transaction.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-          <Table2 className="w-5 h-5 text-indigo-500" />
-          รายการทั้งหมด
-          <span className="text-sm font-normal text-gray-400 ml-1">
-            ({transactions.length} รายการ)
-          </span>
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-w-0">
+      <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <h2 className="text-sm font-bold text-slate-800 flex items-center gap-2 uppercase tracking-tight">
+          <Table2 className="w-4 h-4 text-indigo-600" />
+          Cloud Ledger
         </h2>
+        <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase">
+          <Filter className="w-3 h-3" />
+          {transactions.length} Entries
+        </div>
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-xs text-gray-400 font-medium uppercase tracking-wider">
-              <th className="px-6 py-3">วันที่</th>
-              <th className="px-6 py-3">รายการ</th>
-              <th className="px-6 py-3">ประเภท</th>
-              <th className="px-6 py-3 text-right">จำนวนเงิน</th>
-              <th className="px-6 py-3 text-center">จัดการ</th>
+            <tr className="text-left text-[10px] text-slate-400 font-bold uppercase tracking-widest border-b border-slate-50">
+              <th className="px-6 py-4">Status / Date</th>
+              <th className="px-6 py-4">Description</th>
+              <th className="px-6 py-4 text-right">Amount</th>
+              <th className="px-6 py-4 text-center">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
-            {sorted.map((tx) => {
+          <tbody className="divide-y divide-slate-50">
+            {transactions.map((tx) => {
               const isEditing = editingId === tx.id;
 
               if (isEditing && editForm) {
                 return (
-                  <tr key={tx.id} className="bg-indigo-50/40">
-                    <td className="px-6 py-3">
+                  <tr key={tx.id} className="bg-indigo-50/30">
+                    <td className="px-6 py-4">
                       <input
                         type="date"
                         value={editForm.date}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, date: e.target.value })
-                        }
-                        className="rounded-md border border-gray-200 px-2 py-1.5 text-sm w-36
-                                   focus:outline-none focus:ring-2 focus:ring-indigo-400/30"
+                        onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+                        className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs w-full bg-white outline-none"
                       />
                     </td>
-                    <td className="px-6 py-3">
+                    <td className="px-6 py-4">
                       <input
                         type="text"
                         value={editForm.name}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, name: e.target.value })
-                        }
-                        className="rounded-md border border-gray-200 px-2 py-1.5 text-sm w-full
-                                   focus:outline-none focus:ring-2 focus:ring-indigo-400/30"
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs w-full bg-white outline-none"
                       />
                     </td>
-                    <td className="px-6 py-3">
-                      <select
-                        value={editForm.type}
-                        onChange={(e) =>
-                          setEditForm({
-                            ...editForm,
-                            type: e.target.value as "income" | "expense",
-                          })
-                        }
-                        className="rounded-md border border-gray-200 px-2 py-1.5 text-sm
-                                   focus:outline-none focus:ring-2 focus:ring-indigo-400/30"
-                      >
-                        <option value="income">รายรับ</option>
-                        <option value="expense">รายจ่าย</option>
-                      </select>
-                    </td>
-                    <td className="px-6 py-3 text-right">
+                    <td className="px-6 py-4 text-right">
                       <input
                         type="number"
                         value={editForm.amount}
-                        onChange={(e) =>
-                          setEditForm({
-                            ...editForm,
-                            amount: Number(e.target.value),
-                          })
-                        }
-                        className="rounded-md border border-gray-200 px-2 py-1.5 text-sm w-28 text-right tabular-nums
-                                   focus:outline-none focus:ring-2 focus:ring-indigo-400/30"
-                        min="0"
-                        step="0.01"
+                        onChange={(e) => setEditForm({ ...editForm, amount: Number(e.target.value) })}
+                        className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs w-28 text-right bg-white outline-none"
                       />
                     </td>
-                    <td className="px-6 py-3">
-                      <div className="flex items-center justify-center gap-1">
-                        <button
-                          onClick={saveEdit}
-                          className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 transition"
-                          title="บันทึก"
-                        >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <button onClick={saveEdit} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg">
                           <Check className="w-4 h-4" />
                         </button>
-                        <button
-                          onClick={cancelEdit}
-                          className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition"
-                          title="ยกเลิก"
-                        >
+                        <button onClick={cancelEdit} className="p-1.5 text-slate-400 hover:bg-slate-100 rounded-lg">
                           <X className="w-4 h-4" />
                         </button>
                       </div>
@@ -159,56 +113,34 @@ export default function ExpenseTable({
               }
 
               return (
-                <tr
-                  key={tx.id}
-                  className="hover:bg-gray-50/60 transition group"
-                >
-                  <td className="px-6 py-3.5 text-gray-500 tabular-nums">
-                    {new Date(tx.date).toLocaleDateString("th-TH", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
+                <tr key={tx.id} className="hover:bg-slate-50/50 transition group border-transparent border-l-2 hover:border-indigo-500">
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className={`text-[10px] font-bold uppercase ${tx.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                        {tx.type}
+                      </span>
+                      <span className="text-slate-400 text-xs font-medium tabular-nums">
+                        {new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
                   </td>
-                  <td className="px-6 py-3.5 font-medium text-gray-800">
-                    {tx.name}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className="font-bold text-slate-800">{tx.name}</span>
+                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wide">{tx.category || 'Other'}</span>
+                    </div>
                   </td>
-                  <td className="px-6 py-3.5">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        ${
-                          tx.type === "income"
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-rose-50 text-rose-700"
-                        }`}
-                    >
-                      {tx.type === "income" ? "รายรับ" : "รายจ่าย"}
+                  <td className="px-6 py-4 text-right">
+                    <span className={`font-bold tabular-nums text-sm ${tx.type === 'income' ? 'text-emerald-600' : 'text-slate-900'}`}>
+                      {tx.type === 'income' ? '+' : '-'}฿{formatCurrency(tx.amount)}
                     </span>
                   </td>
-                  <td
-                    className={`px-6 py-3.5 text-right font-semibold tabular-nums ${
-                      tx.type === "income"
-                        ? "text-emerald-600"
-                        : "text-rose-600"
-                    }`}
-                  >
-                    {tx.type === "income" ? "+" : "-"}฿
-                    {formatCurrency(tx.amount)}
-                  </td>
-                  <td className="px-6 py-3.5">
+                  <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-1 sm:opacity-0 group-hover:opacity-100 transition">
-                      <button
-                        onClick={() => startEdit(tx)}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition"
-                        title="แก้ไข"
-                      >
+                      <button onClick={() => startEdit(tx)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => onDelete(tx.id)}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                        title="ลบ"
-                      >
+                      <button onClick={() => onDelete(tx.id)} className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
