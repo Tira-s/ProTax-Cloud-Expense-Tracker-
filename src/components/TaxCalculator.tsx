@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Calculator, ChevronRight, Info, CheckCircle2 } from "lucide-react";
+import { FileText, Calculator, ChevronRight, Info, CheckCircle2, Landmark } from "lucide-react";
 import { TaxResult } from "@/types";
 import { formatCurrency } from "@/lib/taxUtils";
 import { useTranslation } from "./LanguageProvider";
@@ -103,12 +103,12 @@ export default function TaxCalculator({ result }: TaxCalculatorProps) {
         {/* Grand Total Footer */}
         <div className="bg-slate-900 rounded-[2.5rem] p-8 mt-4 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl shadow-indigo-900/20">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-indigo-500/20 rounded-2xl border border-indigo-500/30">
-              <Info className="w-6 h-6 text-indigo-300" />
+            <div className="p-3 bg-indigo-500/20 rounded-2xl border border-indigo-500/30 text-indigo-300">
+              <Landmark className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-indigo-300 text-[10px] font-black uppercase tracking-[0.2em]">{t('taxAmount')} (Net)</p>
-              <p className="text-white/60 text-xs font-medium">Estimated Annual Total</p>
+              <p className="text-indigo-300 text-[10px] font-black uppercase tracking-[0.2em]">{t('estimatedTax')}</p>
+              <p className="text-white/60 text-xs font-medium">{t('taxReport')}</p>
             </div>
           </div>
           <div className="text-center md:text-right">

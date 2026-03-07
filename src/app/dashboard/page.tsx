@@ -13,7 +13,7 @@ import ExpenseTable from "@/components/ExpenseTable";
 import TaxCalculator from "@/components/TaxCalculator";
 import ExportButton from "@/components/ExportButton";
 import { useTranslation } from "@/components/LanguageProvider";
-import { 
+import {
   Languages,
   ArrowRight,
   Loader2,
@@ -44,7 +44,7 @@ export default function DashboardPage() {
   const fetchData = useCallback(async (showLoading = false) => {
     if (!user) return;
     if (showLoading) setDataLoading(true);
-    
+
     try {
       const { data, error } = await supabase
         .from('transactions')
@@ -76,7 +76,7 @@ export default function DashboardPage() {
   // Handlers with Optimistic UI & Background Sync
   const addTransaction = async (tx: Transaction) => {
     if (!user || !isValidAmount(tx.amount)) return;
-    
+
     const sanitizedTx = {
       ...tx,
       name: sanitizeText(tx.name),
@@ -88,7 +88,7 @@ export default function DashboardPage() {
 
     // 2. Background Sync
     const { error } = await supabase.from('transactions').insert([sanitizedTx]);
-    
+
     // 3. Re-verify with server
     fetchData();
     if (error) console.error("Sync failed.");
@@ -135,36 +135,74 @@ export default function DashboardPage() {
     if (error) console.error("Delete failed.");
   };
 
-  const handleDeductionsChange = async (newDeductions: Deduction[]) => {
+  const addDeduction = async (deduction: Deduction) => {
     if (!user) return;
-    
-    const sanitizedDeductions = newDeductions.map(d => ({
-      ...d,
-      name: sanitizeText(d.name),
-      user_id: user.id
-    }));
+
+    // Ensure only the expected fields are sent to Supabase
+    const sanitizedDeduction = {
+      id: deduction.id,
+      user_id: user.id || "", // Fallback
+      name: sanitizeText(deduction.name),
+      amount: deduction.amount
+    };
 
     // 1. Optimistic Update
-    setDeductions(sanitizedDeductions);
+    setDeductions(prev => [...prev, sanitizedDeduction]);
 
     // 2. Background Sync
-    // Delete all current deductions for this user and insert the new set
-    const { error: delError } = await supabase.from('deductions').delete().eq('user_id', user.id);
-    if (delError) console.error("Clearing deductions failed.");
-
-    if (sanitizedDeductions.length > 0) {
-      const { error: insError } = await supabase.from('deductions').insert(sanitizedDeductions);
-      if (insError) console.error("Inserting new deductions failed.");
-    }
+    const { error } = await supabase.from('deductions').insert([sanitizedDeduction]);
 
     // 3. Re-verify
     fetchData();
+    if (error) console.error("Deduction sync failed:", error.message);
   };
 
-  const totalIncome = useMemo(() => 
+  const updateDeduction = async (updated: Deduction) => {
+    if (!user || !isValidAmount(updated.amount)) return;
+
+    const sanitizedUpdate = {
+      ...updated,
+      name: sanitizeText(updated.name)
+    };
+
+    // 1. Optimistic Update
+    setDeductions(prev => prev.map(d => (d.id === updated.id ? sanitizedUpdate : d)));
+
+    // 2. Background Sync
+    const { error } = await supabase.from('deductions')
+      .update({
+        name: sanitizedUpdate.name,
+        amount: sanitizedUpdate.amount
+      })
+      .eq('id', updated.id)
+      .eq('user_id', user.id);
+
+    // 3. Re-verify
+    fetchData();
+    if (error) console.error("Deduction update failed:", error.message);
+  };
+
+  const deleteDeduction = async (id: string) => {
+    if (!user) return;
+
+    // 1. Optimistic Update
+    setDeductions(prev => prev.filter(d => d.id !== id));
+
+    // 2. Background Sync
+    const { error } = await supabase.from('deductions')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id);
+
+    // 3. Re-verify
+    fetchData();
+    if (error) console.error("Deduction delete failed:", error.message);
+  };
+
+  const totalIncome = useMemo(() =>
     transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0), [transactions]
   );
-  const totalExpense = useMemo(() => 
+  const totalExpense = useMemo(() =>
     transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0), [transactions]
   );
   const balance = totalIncome - totalExpense;
@@ -231,7 +269,7 @@ export default function DashboardPage() {
                 <span className="text-xs font-bold text-slate-900">{user?.email?.split('@')[0]}</span>
                 <span className="text-[10px] text-slate-400">{user?.email}</span>
               </div>
-              <button 
+              <button
                 onClick={signOut}
                 className="p-2.5 rounded-xl hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition group"
                 title={t('signOut')}
@@ -243,18 +281,16 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         <SummaryDashboard totalIncome={totalIncome} totalExpense={totalExpense} balance={balance} totalTax={taxResult.totalTax} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-4 space-y-6">
+        {/* Row 1: Transactions */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-4 h-[550px]">
             <ExpenseForm onAdd={addTransaction} />
-            <DeductionManager deductions={deductions} onChange={handleDeductionsChange} />
           </div>
 
-          <div className="lg:col-span-8 space-y-6">
-            <TaxCalculator result={taxResult} />
-            
+          <div className="lg:col-span-8 space-y-6 h-[550px] flex flex-col">
             {/* Sorting Toolbar */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
               <div className="flex items-center gap-2">
@@ -263,7 +299,7 @@ export default function DashboardPage() {
                 </div>
                 <span className="text-xs font-bold text-slate-700 uppercase tracking-tight">{t('sortBy')}</span>
               </div>
-              
+
               <div className="flex flex-wrap items-center gap-2">
                 {[
                   { id: 'created_at', key: 'added', icon: Clock },
@@ -275,17 +311,17 @@ export default function DashboardPage() {
                     key={option.id}
                     onClick={() => setSortBy(option.id)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border
-                      ${sortBy === option.id 
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20' 
+                      ${sortBy === option.id
+                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-600/20'
                         : 'bg-white text-slate-500 border-slate-100 hover:border-slate-300'}`}
                   >
                     <option.icon className="w-3 h-3" />
                     {t(option.key)}
                   </button>
                 ))}
-                
+
                 <div className="h-6 w-[1px] bg-slate-200 mx-1 hidden sm:block" />
-                
+
                 <button
                   onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-black transition-all shadow-lg shadow-slate-900/10"
@@ -296,7 +332,24 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <ExpenseTable transactions={transactions} onUpdate={updateTransaction} onDelete={deleteTransaction} />
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <ExpenseTable transactions={transactions} onUpdate={updateTransaction} onDelete={deleteTransaction} />
+            </div>
+          </div>
+        </div>
+
+        {/* Row 2: Analysis & Deductions */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pt-2 border-t border-slate-100">
+          <div className="lg:col-span-4 min-h-[400px]">
+            <DeductionManager
+              deductions={deductions}
+              onAdd={addDeduction}
+              onUpdate={updateDeduction}
+              onDelete={deleteDeduction}
+            />
+          </div>
+          <div className="lg:col-span-8 min-h-[400px]">
+            <TaxCalculator result={taxResult} />
           </div>
         </div>
       </main>

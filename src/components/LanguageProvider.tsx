@@ -18,17 +18,17 @@ const translations: TranslationDict = {
   syncing: { th: "กำลังซิงค์...", en: "Syncing..." },
   signOut: { th: "ออกจากระบบ", en: "Sign Out" },
   loading: { th: "กำลังเชื่อมต่อคลาวด์...", en: "Syncing with Cloud..." },
-  
+
   // Dashboard Header
   export: { th: "ส่งออก Excel", en: "Export Excel" },
-  
+
   // Summary
   summaryTitle: { th: "ภาพรวมการเงิน", en: "Financial Summary" },
   totalIncome: { th: "รายรับทั้งหมด", en: "Total Income" },
   totalExpense: { th: "รายจ่ายทั้งหมด", en: "Total Expense" },
   balance: { th: "เงินคงเหลือ", en: "Balance" },
   estimatedTax: { th: "ภาษีที่ต้องจ่าย (ประมาณ)", en: "Estimated Tax" },
-  
+
   // Expense Form
   addTransaction: { th: "เพิ่มรายการใหม่", en: "Add Transaction" },
   title: { th: "ชื่อรายการ", en: "Title" },
@@ -40,7 +40,7 @@ const translations: TranslationDict = {
   expense: { th: "รายจ่าย", en: "Expense" },
   date: { th: "วันที่", en: "Date" },
   syncToCloud: { th: "บันทึกลงคลาวด์", en: "Sync to Cloud" },
-  
+
   // Categories
   salary: { th: "เงินเดือน", en: "Salary" },
   freelance: { th: "ฟรีแลนซ์", en: "Freelance" },
@@ -50,12 +50,12 @@ const translations: TranslationDict = {
   housing: { th: "ที่พักอาศัย", en: "Housing" },
   health: { th: "สุขภาพ", en: "Health" },
   other: { th: "อื่นๆ", en: "Other" },
-  
+
   // Deduction Manager
   manualDeductions: { th: "รายการลดหย่อนพิเศษ", en: "Manual Deductions" },
   totalCustom: { th: "รวมลดหย่อนพิเศษ", en: "Total Custom" },
   deductionName: { th: "ชื่อรายการลดหย่อน", en: "Deduction Name" },
-  
+
   // Tax Calculator
   taxReport: { th: "รายงานภาษีเงินได้บุคคลธรรมดา", en: "Personal Income Tax Report" },
   taxableIncome: { th: "เงินได้สุทธิ", en: "Taxable Income" },
@@ -65,9 +65,9 @@ const translations: TranslationDict = {
   rate: { th: "อัตราภาษี", en: "Rate" },
   taxAmount: { th: "ภาษี", en: "Tax" },
   standardDeduction: { th: "หักลดหย่อนพื้นฐาน", en: "Standard Deduction" },
-  personalAllowance: { th: "ลดหย่อนส่วนตัว (60,000)", en: "Personal Allowance (60,000)" },
+  personalAllowance: { th: "ลดหย่อนส่วนตัว", en: "Personal Allowance" },
   more: { th: "ขึ้นไป", en: "Up" },
-  
+
   // Sorting
   sortBy: { th: "เรียงลำดับตาม", en: "Sort By" },
   added: { th: "ที่เพิ่มล่าสุด", en: "Added" },
@@ -76,16 +76,16 @@ const translations: TranslationDict = {
   sortName: { th: "ชื่อรายการ", en: "Name" },
   ascending: { th: "น้อยไปมาก", en: "Ascending" },
   descending: { th: "มากไปน้อย", en: "Descending" },
-  
+
   // Calculator
   logicCalc: { th: "เครื่องคิดเลข", en: "Logic Calc" },
   useValue: { th: "ตกลง", en: "Use Value" },
-  
+
   // Export Headers
   exportHeaderName: { th: "รายการ", en: "Item" },
   exportHeaderAmount: { th: "จำนวนเงิน", en: "Amount" },
   exportHeaderDate: { th: "วันที่", en: "Date" },
-  
+
   // Expense Table
   noRecords: { th: "ยังไม่มีข้อมูลในคลาวด์", en: "No cloud records found" },
   startAdding: { th: "เริ่มต้นด้วยการเพิ่มรายการแรกของคุณ", en: "Start by adding your first transaction." },
@@ -95,7 +95,7 @@ const translations: TranslationDict = {
   description: { th: "รายละเอียด", en: "Description" },
   action: { th: "จัดการ", en: "Action" },
   item: { th: "รายการ", en: "Item" },
-  
+
   // Auth
   signInTitle: { th: "ลงชื่อเข้าใช้ ProTax Cloud", en: "Sign in to ProTax Cloud" },
   signInSubtitle: { th: "เข้าสู่ระบบเพื่อจัดการภาษีอย่างปลอดภัย", en: "Sign in to manage your taxes securely" },
