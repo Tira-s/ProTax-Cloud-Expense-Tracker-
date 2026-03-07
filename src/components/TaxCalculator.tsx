@@ -55,8 +55,8 @@ export default function TaxCalculator({ result }: TaxCalculatorProps) {
             <p className="text-xl font-black text-emerald-600 tabular-nums">-฿{result.personalDeduction.toLocaleString()}</p>
           </div>
           <div className="p-5 bg-indigo-50 rounded-3xl border border-indigo-100 space-y-1">
-            <span className="text-[10px] font-black text-indigo-600/60 uppercase tracking-widest">{t('totalDeduction')}</span>
-            <p className="text-xl font-black text-indigo-600 tabular-nums">-฿{result.totalDeductions.toLocaleString()}</p>
+            <span className="text-[10px] font-black text-indigo-600/60 uppercase tracking-widest">{t('totalManualDeduction')}</span>
+            <p className="text-xl font-black text-indigo-600 tabular-nums">-฿{result.customDeductions.toLocaleString()}</p>
           </div>
         </div>
 
