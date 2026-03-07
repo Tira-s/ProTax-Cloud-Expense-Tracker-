@@ -41,18 +41,22 @@ export default function TaxCalculator({ result }: TaxCalculatorProps) {
         </div>
 
         {/* Deductions & Allowances Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 py-4">
           <div className="p-5 bg-slate-50 rounded-3xl border border-slate-100 space-y-1">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('totalIncome')}</span>
             <p className="text-xl font-black text-slate-900 tabular-nums">฿{result.grossIncome.toLocaleString()}</p>
           </div>
-          <div className="p-5 bg-emerald-50/50 rounded-3xl border border-emerald-100 space-y-1">
+          <div className="p-5 bg-emerald-50/30 rounded-3xl border border-emerald-100/50 space-y-1">
             <span className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest">{t('standardDeduction')}</span>
             <p className="text-xl font-black text-emerald-600 tabular-nums">-฿{result.expenseDeduction.toLocaleString()}</p>
           </div>
-          <div className="p-5 bg-emerald-50/50 rounded-3xl border border-emerald-100 space-y-1">
+          <div className="p-5 bg-emerald-50/30 rounded-3xl border border-emerald-100/50 space-y-1">
             <span className="text-[10px] font-black text-emerald-600/60 uppercase tracking-widest">{t('personalAllowance')}</span>
             <p className="text-xl font-black text-emerald-600 tabular-nums">-฿{result.personalDeduction.toLocaleString()}</p>
+          </div>
+          <div className="p-5 bg-indigo-50 rounded-3xl border border-indigo-100 space-y-1">
+            <span className="text-[10px] font-black text-indigo-600/60 uppercase tracking-widest">{t('totalDeduction')}</span>
+            <p className="text-xl font-black text-indigo-600 tabular-nums">-฿{result.totalDeductions.toLocaleString()}</p>
           </div>
         </div>
 

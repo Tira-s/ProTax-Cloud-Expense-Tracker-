@@ -66,6 +66,7 @@ const translations: TranslationDict = {
   taxAmount: { th: "ภาษี", en: "Tax" },
   standardDeduction: { th: "หักลดหย่อนพื้นฐาน", en: "Standard Deduction" },
   personalAllowance: { th: "ลดหย่อนส่วนตัว", en: "Personal Allowance" },
+  totalDeduction: { th: "รวมรายการหักลดหย่อน", en: "Total Deduction" },
   more: { th: "ขึ้นไป", en: "Up" },
 
   // Sorting
